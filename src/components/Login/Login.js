@@ -3,6 +3,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import firebaseConfig from './firebase.config';
 import { UserContext } from '../../App';
+import { useHistory, useLocation } from 'react-router-dom';
 
 
 const Login = () => {
@@ -10,6 +11,11 @@ const Login = () => {
     if(firebase.apps.length === 0){
         firebase.initializeApp(firebaseConfig);
     }
+
+    const history = useHistory();
+    const location = useLocation();
+    let { from } = location.state || { from: { pathname: "/" } };
+
     const handleGoogleSignIn = ()=>{
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -17,6 +23,7 @@ const Login = () => {
             const {displayName, email} = result.user;
             const signedInUser = {name: displayName, email};
             setLoggedInUser(signedInUser);
+            history.replace(from);
           }).catch(function(error) {
             var errorCode = error.code;
             var errorMessage = error.message;
